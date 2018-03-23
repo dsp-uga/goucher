@@ -36,13 +36,19 @@ echo "downloading train"
 cd train
 
 while read -r line || [[ -n "$line" ]]; do
-    echo "$line"
-    wget "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
-    tar -xf  "$line.tar"
-    rm "$line.tar"
-    cd "data/$line"
-    wget  -o "mask.png" "https://storage.googleapis.com/uga-dsp/project4/masks/$line.png"
-    cd ../..
+
+    # check if the sample folder already is there skip the dopwnload
+    if [ ! -d "data/$line" ]
+    then
+        wget -nv "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
+        tar -xf  "$line.tar"
+        rm "$line.tar"
+        cd "data/$line"
+        wget -v  -O "mask.png" "https://storage.googleapis.com/uga-dsp/project4/masks/$line.png"
+        cd ../..
+        echo "$line"
+    fi
+
 done < "../train.txt"
 
 
@@ -50,10 +56,13 @@ echo "downloading training"
 cd ../test
 
 while read -r line || [[ -n "$line" ]]; do
-    echo "$line"
-    wget "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
-    tar -xf  "$line.tar"
-    rm "$line.tar"
+    if [ ! -d "data/$line" ]
+    then
+        wget -nv "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
+        tar -xf  "$line.tar"
+        rm "$line.tar"
+        echo "$line"
+    fi
 done < "../test.txt"
 
 
