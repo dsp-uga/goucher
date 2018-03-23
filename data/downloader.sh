@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+
+# this script downloads files in the current directory and creates the structure as :
+# --train
+# --|--data ( this contains folders with names as hashes )
+# --test
+# --|--data ( this contains folders with names as hashes )
+#
+# masks are downloaded as "mask.png" in each training folder
+
+
 # download the guide files if test and train are
 if [ ! -f "test.txt"   ]
 then
@@ -21,8 +31,23 @@ then
     mkdir "test"
 fi
 
-echo "staring to download training"
-cd test
+echo "downloading train"
+
+cd train
+
+while read -r line || [[ -n "$line" ]]; do
+    echo "$line"
+    wget "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
+    tar -xf  "$line.tar"
+    rm "$line.tar"
+    cd "data/$line"
+    wget  -o "mask.png" "https://storage.googleapis.com/uga-dsp/project4/masks/$line.png"
+    cd ../..
+done < "../train.txt"
+
+
+echo "downloading training"
+cd ../test
 
 while read -r line || [[ -n "$line" ]]; do
     echo "$line"
@@ -32,13 +57,4 @@ while read -r line || [[ -n "$line" ]]; do
 done < "../test.txt"
 
 
-echo "downloading train"
-
-cd ../train
-
-while read -r line || [[ -n "$line" ]]; do
-    echo "$line"
-    wget "https://storage.googleapis.com/uga-dsp/project4/data/$line.tar"
-    tar -xf  "$line.tar"
-    rm "$line.tar"
-done < "../train.txt"
+echo "over and out"
