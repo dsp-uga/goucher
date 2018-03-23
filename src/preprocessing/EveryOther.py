@@ -69,8 +69,8 @@ class EveryOther ( preprocessor ):
 
                 # take under account the skip count and lod the images
                 for i in range(0, 99, self.skip_count):
-                    temp_x= cv2.imread(os.path.join(self.trainingPath, "/%s/frame%04d.png" % (sample, i)))
-                    train_x.append( self.change_size(temp_x))
+                    temp_x= cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)),0)
+                    train_x.append(self.change_size(temp_x))
                     train_y.append(y)
 
 
@@ -78,7 +78,7 @@ class EveryOther ( preprocessor ):
         test_x = []
         if not self.testPath is None:
             for sample in sorted(os.listdir(self.testPath)):
-                image = cv2.imread(os.path.join(self.testPath, "/%s/frame0050.png" % sample))
+                image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0)
                 test_x.append(image)
 
         train_x = array(train_x)
