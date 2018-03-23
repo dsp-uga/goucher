@@ -2,6 +2,12 @@
 
 .idea/
 
+# ignore data files
+
+data/*.txt
+data/train/
+data/test/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
