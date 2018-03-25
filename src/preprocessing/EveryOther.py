@@ -47,6 +47,7 @@ class EveryOther ( preprocessor ):
                 # load train_y
                 y = self.change_size(cv2.imread( mask_path, 0))
                 y= np.expand_dims( y, axis=0 )
+                y=( y==2 ).astype(int)
 
                 # take under account the skip count and lod the images
                 t = [  self.change_size(cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)),0))  for i in range(0, 99, self.skip_count) ]
