@@ -56,30 +56,35 @@ class EveryOther ( preprocessor ):
                     train_y.append(y)
 
         # create the test set
-        test_x = []
+        # test_x = []
+        test_dic = {}
+        test_size_ref = {}
         if not self.testPath is None:
             for sample in sorted(os.listdir(self.testPath)):
-                image = self.change_size(cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0))
-                image = (image==2).astype(int)
-                test_x.append(np.expand_dims(image, axis=0))
+                image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0)
+                test_size_ref[sample]= image.shape
+                image = self.change_size(image)
+                image = (image==2).astype(int).reshape(image.shape + (1,))
+                test_dic[sample] = np.expand_dims(image, axis=0)
+                # test_x.append(np.expand_dims(image, axis=0))
 
         train_x = np.vstack(train_x)
         train_y = np.vstack(train_y)
-        test_x = np.vstack(test_x)
+        # test_x = np.vstack(test_x)
 
         train_x = train_x.reshape(train_x.shape + (1,))
         train_y = train_y.reshape(train_y.shape + (1,))
-        test_x = test_x.reshape(test_x.shape + (1,))
+        #test_x = test_x.reshape(test_x.shape + (1,))
 
         print(train_x.shape)
         print(train_y.shape)
-        print(test_x.shape)
+        # print(test_x.shape)
 
         self.x_train = train_x
-        self.x_test = test_x
+        # self.x_test = test_x
         self.y_train = train_y
 
-        if( not self.exportPath is None):
-            self.save_to_file()
+        # if( not self.exportPath is None):
+        #     self.save_to_file()
 
-        return train_x , train_y , test_x
+        return train_x , train_y , test_dic, test_size_ref

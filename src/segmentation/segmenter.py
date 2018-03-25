@@ -57,12 +57,14 @@ class Segmenter :
         :return: the predicted values
         """
 
-        # X_test = X_test.reshape(X_test.shape + (1,))
-        ret={}
-        for item in data_dic:
-
-            temp =np.array([data_dic[item].reshape(data_dic[item].shape + (1,))])
-            ret[item] =np.uint8( self.trained_model.predict(temp)[0].squeeze(axis=2) *255)
-        # ret = [{x: self.trained_model.predict()[0]} for x in data_dic]
-
-        return ret
+        return np.uint(self.trained_model.predict(data_dic)[0])
+        #
+        # # X_test = X_test.reshape(X_test.shape + (1,))
+        # ret={}
+        # for item in data_dic:
+        #
+        #     temp =np.array([data_dic[item].reshape(data_dic[item].shape + (1,))])
+        #     ret[item] =np.uint8( self.trained_model.predict(temp)[0].squeeze(axis=2) *255)
+        # # ret = [{x: self.trained_model.predict()[0]} for x in data_dic]
+        #
+        # return ret
