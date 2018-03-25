@@ -14,7 +14,7 @@ from src.segmentation.UnetSegmenter import UNET_Segmenter
 # from src.Classifiers.Classifier import Classifier
 # from src.Classifiers.FCN import FCN_Classifier
 # from src.Classifiers.UNet_Classifier import UNET_Classifier
-
+from src.postprocessing.Postprocessor import  postProcess
 description = ' '
 
 parser = argparse.ArgumentParser(description=description, add_help='How to use', prog='python main.py <options>')
@@ -47,6 +47,11 @@ parser.add_argument("-ep", "--exportpath", default=None,
 
                     help='Chooses the path to export model and numpy files')
 
+parser.add_argument("-o", "--output", default=None,
+
+                    help='sets the path for the output files to be stored')
+
+
 parser.add_argument("-lf", "--logfile", default="log.log",
                     help="Path to the log file, this file will contain the log records")
 
@@ -78,17 +83,17 @@ else:
 # -------------- Loading the data
 
 # try to load pre calculated data :
-try:
-    x_train, y_train, x_test = the_preprocessor.load_from_files()
-
-except FileNotFoundError:
+# try:
+#     x_train, y_train, x_test, test_size_ref = the_preprocessor.load_from_files()
+#
+# except FileNotFoundError:
     # if there is no file to load set them as null, they will be loaded autiomatically
-    x_train, y_train, x_test = None, None, None
+x_train, y_train, x_test, test_size_ref = None, None, None, None
 
 # check if there is no data, read them from input ( this will take time! )
 if  ( x_train is None):
     logging.info("Loading data from original data")
-    x_train, y_train, x_test = the_preprocessor.preprocess()
+    x_train, y_train, x_test, test_size_ref = the_preprocessor.preprocess()
     logging.info("Done loading data from original data")
 else:
     logging.info("data loaded from pre-calculated files")
@@ -109,7 +114,10 @@ else :
 #------------ predict
 if( args.predict  and x_test ):
     # run the prediction
-    predicted = the_Segmenter.predict( x_test )
+    predicted={}
+    for key in x_test :
+        predicted[key] = the_Segmenter.predict( x_test[key] )
+
 
     # save the results
-    # postProcess(theDic=predicted,output_file_name="test.json")
+    postProcess(theDic=predicted,output_path=args.output , size_dic=test_size_ref)
