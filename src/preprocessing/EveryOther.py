@@ -29,61 +29,46 @@ class EveryOther ( preprocessor ):
         self.x_train = None
 
 
-    def loadSample ( self, path ):
-        """
-        this funtion loads the images in the sample as one output image
-        :param paht: path ot the sample this has to be in glob format describing path to TIFF images
-        :return: returns one image which is the aggregated version of all images in the sample
-        """
-
-        # read image files
-        files = sorted(glob(path))
-        imgs = array([imread(f) for f in files])
-
-        # merge files in to one image
-        image = imgs.sum(axis=0)
-
-        image = self.change_size( image, self.image_size )
-
-        print(image.shape)
-
-        return image
-
 
     def preprocess(self):
         """
         this funciton preopricess the imagaes into three arays, test_x tarin_x , train_y
         :return:
         """
-        train_x = []  # None #np.array([])
+        train_x = [] # None #np.array([])
         train_y = []  # None # np.array([])
 
         # create the trainig set
         if( not  self.trainingPath is None):
-            for sample in sorted( os.listdir(self.trainingPath)) :
-                images_glob_path = os.path.join( self.trainingPath,sample + "/*.png")
+            for sample in sorted(os.listdir(self.trainingPath)) :
+
                 mask_path = os.path.join( self.trainingPath, sample + '/mask.png')
 
                 # load train_y
                 y = self.change_size(cv2.imread( mask_path, 0))
+                y= np.expand_dims( y, axis=0 )
 
                 # take under account the skip count and lod the images
-                for i in range(0, 99, self.skip_count):
-                    temp_x= cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)),0)
-                    train_x.append(self.change_size(temp_x))
+                t = [  self.change_size(cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)),0))  for i in range(0, 99, self.skip_count) ]
+                t = [ np.expand_dims(x, axis=0) for x in t ]
+                train_x.extend(t)
+                for i in range( len(t)):
                     train_y.append(y)
-
 
         # create the test set
         test_x = []
         if not self.testPath is None:
             for sample in sorted(os.listdir(self.testPath)):
-                image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0)
-                test_x.append(image)
+                image = self.change_size(cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0))
+                test_x.append(np.expand_dims(image, axis=0))
 
-        train_x = array(train_x)
-        train_y = array(train_y)
-        test_x = array(test_x)
+        train_x = np.vstack(train_x)
+        train_y = np.vstack(train_y)
+        test_x = np.vstack(test_x)
+
+        print(train_x.shape)
+        print(train_y.shape)
+        print(test_x.shape)
 
         self.x_train = train_x
         self.x_test = test_x

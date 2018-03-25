@@ -41,7 +41,8 @@ parser.add_argument("-b", "--batch", default="4",
 parser.add_argument("-pp", "--preprocessor", default="sum",
                     help='Chooses the Preprcessor to be applied ')
 
-parser.add_argument("-ep", "--exportpath", default="output",
+parser.add_argument("-ep", "--exportpath", default=None,
+
                     help='Chooses the path to export model and numpy files')
 
 parser.add_argument("-lf", "--logfile", default="log.log",

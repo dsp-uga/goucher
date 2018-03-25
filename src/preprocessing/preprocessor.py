@@ -49,11 +49,9 @@ class preprocessor:
         """
 
         if (not self.name is None and not self.importPath is None):
-            np.save(os.path.join(self.importPath, "x_train_" + self.name + ".npy"), self.x_train)
-            np.save(os.path.join(self.importPath, "y_train_" + self.name + ".npy") , self.y_train)
-            np.save(os.path.join(self.importPath, "x_test_" + self.name + ".npy") , self.x_test)
-
-
+            np.savez_compressed(os.path.join(self.importPath, "x_train_" + self.name + ".npy"), self.x_train)
+            np.savez_compressed(os.path.join(self.importPath, "y_train_" + self.name + ".npy") , self.y_train)
+            np.savez_compressed(os.path.join(self.importPath, "x_test_" + self.name + ".npy") , self.x_test)
 
 
     def change_size ( self , source , target_dim=[640,640] ):
