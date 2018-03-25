@@ -8,6 +8,8 @@ import os
 import logging
 from src.preprocessing import preprocessor
 from src.preprocessing import EveryOther
+from src.segmentation.segmenter import Segmenter
+from src.segmentation.UnetSegmenter import UNET_Segmenter
 # from src.postprocessing.postprocessing import postProcess
 # from src.Classifiers.Classifier import Classifier
 # from src.Classifiers.FCN import FCN_Classifier
@@ -23,7 +25,7 @@ parser.add_argument("-d", "--dataset", default="../data/tarin/",
 parser.add_argument("-ts", "--testset", default=None,
                     help='Path to the testing data [DEFAULT: None]')
 
-parser.add_argument("-m", "--model", default="FCN",
+parser.add_argument("-m", "--model", default="unet",
                     help='model to be used in the segmentation can be UNET/FCN/NMF [DEFAULT: "FCN"]')
 
 parser.add_argument("-t", "--train", action="store_true",
@@ -57,22 +59,21 @@ logging.basicConfig(filename=args.logfile, level=logging.INFO, filemode="w",
                     format=" %(asctime)s - %(module)s.%(funcName)s - %(levelname)s : %(message)s ")
 
 the_preprocessor = None
-the_Classifier = None
+the_Segmenter = None
 
 # set the preprocessor
 if (args.preprocessor == "everyother"):
-    the_preprocessor = EveryOther.EveryOther(images_size=[512, 512],trainingPath=args.dataset, testPath=args.testset,
+    the_preprocessor = EveryOther.EveryOther(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
                                          exportPath=args.exportpath, importPath=args.exportpath )
 else:
     the_preprocessor = preprocessor.preprocessor()
 
 # set the set classifier :
-# if (args.model == "FCN"):
-#     the_Classifier = FCN_Classifier ( )
-# elif args.model == "UNET":
-#     the_Classifier = UNET_Classifier()
-# else:
-#     the_Classifier = Classifier()
+
+if args.model == "unet":
+    the_Segmenter = UNET_Segmenter()
+else:
+    the_Segmenter = Segmenter()
 
 # -------------- Loading the data
 
@@ -97,18 +98,18 @@ else:
 # --------------- train model!
 if( args.train ):
     logging.info("Starting training")
-    model = the_Classifier.train(x_train=x_train, y_train=y_train , epochs=args.epoch ,batch_size=args.batch)
-    the_Classifier.saveModel( args.exportpath )
+    model = the_Segmenter.train(x_train=x_train, y_train=y_train , epochs=int(args.epoch) ,batch_size=int(args.batch) )
+    the_Segmenter.saveModel( args.exportpath )
     logging.info("Done with training")
 else :
-    model = the_Classifier.load_model( args.exportpath )
+    model = the_Segmenter.load_model( args.exportpath )
 
 # --------------- train model!
 
 #------------ predict
 if( args.predict  and x_test ):
     # run the prediction
-    predicted = the_Classifier.predict( x_test )
+    predicted = the_Segmenter.predict( x_test )
 
     # save the results
-    postProcess(theDic=predicted,output_file_name="test.json")
+    # postProcess(theDic=predicted,output_file_name="test.json")

@@ -50,7 +50,7 @@ class EveryOther ( preprocessor ):
 
                 # take under account the skip count and lod the images
                 t = [  self.change_size(cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)),0))  for i in range(0, 99, self.skip_count) ]
-                t = [ np.expand_dims(x, axis=0) for x in t ]
+                t = [ np.expand_dims(x, axis=0)  for x in t ]
                 train_x.extend(t)
                 for i in range( len(t)):
                     train_y.append(y)
@@ -60,11 +60,16 @@ class EveryOther ( preprocessor ):
         if not self.testPath is None:
             for sample in sorted(os.listdir(self.testPath)):
                 image = self.change_size(cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0))
+                image = (image==2).astype(int)
                 test_x.append(np.expand_dims(image, axis=0))
 
         train_x = np.vstack(train_x)
         train_y = np.vstack(train_y)
         test_x = np.vstack(test_x)
+
+        train_x = train_x.reshape(train_x.shape + (1,))
+        train_y = train_y.reshape(train_y.shape + (1,))
+        test_x = test_x.reshape(test_x.shape + (1,))
 
         print(train_x.shape)
         print(train_y.shape)
