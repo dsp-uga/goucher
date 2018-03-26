@@ -30,9 +30,9 @@ def postProcess (theDic, output_path, size_dic):
     final_dic = []
 
     for key in file_name_values_dic :
-        theImage = downsize( file_name_values_dic[key] , size_dic[key] )
+        theImage = downsize(file_name_values_dic[key], size_dic[key])
         theImage = 2 * theImage
-        cv2.imwrite( os.path.join( output_path, key+".png" ) , theImage )
+        cv2.imwrite( os.path.join( output_path, key+".png"), theImage)
         # find connected components
     #     x, markers = cv2.connectedComponents( file_name_values_dic[key] )
     #

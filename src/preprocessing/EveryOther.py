@@ -65,7 +65,7 @@ class EveryOther ( preprocessor ):
                 image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0)
                 test_size_ref[sample]= image.shape
                 image = self.change_size(image)
-                image = (image==2).astype(int).reshape(image.shape + (1,))
+                image = image.reshape(image.shape + (1,))
                 test_dic[sample] = np.expand_dims(image, axis=0)
                 # test_x.append(np.expand_dims(image, axis=0))
 

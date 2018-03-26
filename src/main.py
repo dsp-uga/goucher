@@ -115,7 +115,9 @@ else :
 if( args.predict  and x_test ):
     # run the prediction
     predicted={}
+    import numpy as np
     for key in x_test :
+        print( x_test[key].shape , np.max( x_test[key]) , np.min( x_test[key] )  )
         predicted[key] = the_Segmenter.predict( x_test[key] )
 
 
