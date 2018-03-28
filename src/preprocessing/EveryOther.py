@@ -62,11 +62,23 @@ class EveryOther ( preprocessor ):
         test_size_ref = {}
         if not self.testPath is None:
             for sample in sorted(os.listdir(self.testPath)):
-                image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0)
-                test_size_ref[sample]= image.shape
-                image = self.change_size(image)
-                image = image.reshape(image.shape + (1,))
-                test_dic[sample] = np.expand_dims(image, axis=0)
+                # image = cv2.imread(os.path.join(self.testPath, "%s/frame0050.png" % sample),0) #/ 255
+                # test_size_ref[sample]= image.shape
+                # image = self.change_size(image)
+                # image = image.reshape(image.shape + (1,))
+                # test_dic[sample] = np.expand_dims(image, axis=0)
+                print (os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)))
+                if  '.DS_Store' in sample : continue
+
+                t = [self.change_size(cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0))
+                     for i in range(0, 99, 3)]
+
+                test_size_ref[sample] = t[0].shape
+                t = [np.expand_dims(x.reshape(x.shape + (1,)), axis=0)  for x in t]
+
+                test_dic[sample] = np.vstack(t)
+
+
                 # test_x.append(np.expand_dims(image, axis=0))
 
         train_x = np.vstack(train_x)
