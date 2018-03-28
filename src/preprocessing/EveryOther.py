@@ -70,10 +70,13 @@ class EveryOther ( preprocessor ):
                 print (os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)))
                 if  '.DS_Store' in sample : continue
 
-                t = [self.change_size(cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0))
+                t = [cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0)
                      for i in range(0, 99, 3)]
 
                 test_size_ref[sample] = t[0].shape
+
+                t = [ self.change_size(x) for x in  t ]
+
                 t = [np.expand_dims(x.reshape(x.shape + (1,)), axis=0)  for x in t]
 
                 test_dic[sample] = np.vstack(t)
