@@ -56,8 +56,18 @@ class Segmenter :
         :param data_dic:
         :return: the predicted values
         """
+        temp = self.trained_model.predict(data_dic)
+        # print ( type( temp ) )
+        # print( temp.shape )
+        # print(np.max(temp) , np.mean( temp ), np.min( temp ) )
+        temp = (temp>=0.5).astype(int)
+        temp = np.sum(temp, axis=0)
+        temp = (temp > 0.5).astype(int)
+        # print ( temp.shape  , np.max( temp ), np.min(temp) )
 
-        return np.uint(self.trained_model.predict(data_dic)[0])
+        return  np.uint(temp) #
+        # return np.uint(self.trained_model.predict(data_dic)[0])
+
         #
         # # X_test = X_test.reshape(X_test.shape + (1,))
         # ret={}

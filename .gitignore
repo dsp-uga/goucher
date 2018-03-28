@@ -8,6 +8,11 @@ data/*.txt
 data/train/
 data/test/
 
+# ignore output files
+
+output/
+export/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
