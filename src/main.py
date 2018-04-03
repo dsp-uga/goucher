@@ -10,6 +10,7 @@ from src.preprocessing import preprocessor
 from src.preprocessing import EveryOther
 from src.segmentation.segmenter import Segmenter
 from src.segmentation.UnetSegmenter import UNET_Segmenter
+from src.segmentation.DualInputUNETSegmenter import Dual_Input_UNET_Segmenter
 from src.preprocessing.BasicVariance import BasicVariance
 from src.postprocessing.Postprocessor import  postProcess
 description = ' '
@@ -77,6 +78,8 @@ else:
 
 if args.model == "unet":
     the_Segmenter = UNET_Segmenter()
+if args.model == 'dualinpuunet':
+    the_Segmenter = Dual_Input_UNET_Segmenter()
 else:
     the_Segmenter = Segmenter()
 
@@ -103,11 +106,15 @@ else:
 # --------------- train model!
 if( args.train ):
     logging.info("Starting training")
-    model = the_Segmenter.train(x_train=x_train, y_train=y_train , epochs=int(args.epoch) ,batch_size=int(args.batch) )
-    the_Segmenter.saveModel( args.exportpath )
+    if (args.model == 'unet'):
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, epochs=int(args.epoch) ,batch_size=int(args.batch) )
+    else:
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var, epochs=int(args.epoch),
+                                    batch_size=int(args.batch))
+    the_Segmenter.saveModel(args.exportpath)
     logging.info("Done with training")
-else :
-    model = the_Segmenter.load_model( args.exportpath )
+else:
+    model = the_Segmenter.load_model(args.exportpath)
 
 # --------------- train model!
 
