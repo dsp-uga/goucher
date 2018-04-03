@@ -115,7 +115,7 @@ class Dual_Input_UNET_Segmenter(Segmenter):
         input_prob_inverse = Input(input_shape)
         # Conv3D(filters,(3,3,3),sjfsjf)
 
-        merger = concatenate(main_input , var_input  )
+        merger = concatenate([main_input , var_input ] )
 
         conv1 = Conv2D(32, (kernel_size, kernel_size), activation='relu', padding='same',
                        kernel_regularizer=regularizers.l2(l2_lambda))(merger)

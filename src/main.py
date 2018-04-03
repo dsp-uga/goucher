@@ -125,7 +125,10 @@ if( args.predict  and x_test ):
     import numpy as np
     for key in x_test :
         print( x_test[key].shape , np.max( x_test[key]) , np.min( x_test[key] )  )
-        predicted[key] = the_Segmenter.predict( x_test[key] )
+        if test_vars is not None :
+            predicted[key] = the_Segmenter.predict(x_test[key] , test_vars[key] )
+        else:
+            predicted[key] = the_Segmenter.predict( x_test[key] )
 
 
     # save the results

@@ -49,17 +49,17 @@ class BasicVariance ( preprocessor ):
                     the_var = cv2.imread( os.path.join( self.trainingPath, sample + '/basicVariance.png') ,0 )
                 else:
                     files = sorted( glob( os.path.join(self.trainingPath, "%s/frame*.png" % sample) ) )
-                    with np.vstack( [ self.change_size(cv2.imread( x, 0))   for x in files ]) as files:
-                        variances = np.var(files, axis=0)
-                        variances = (variances / np.max(variances)) * 255
+                    files = np.vstack([self.change_size(cv2.imread(x, 0)) for x in files])
+                    variances = np.var(files, axis=0)
+                    variances = (variances / np.max(variances)) * 255
 
-                        del (files )
+                    del (files )
 
-                        cv2.imwrite( os.path.join( self.trainingPath, sample + '/basicVariance.png'), variances )
-                        the_var = variances
+                    cv2.imwrite( os.path.join( self.trainingPath, sample + '/basicVariance.png'), variances )
 
+                    the_var = variances
 
-
+                the_var = np.expand_dims(the_var.reshape(the_var.shape + (1,)), axis=0)
                 # load train_y
                 y = self.change_size(cv2.imread( mask_path, 0))
                 y= np.expand_dims( y, axis=0 )
@@ -89,17 +89,19 @@ class BasicVariance ( preprocessor ):
                 if  '.DS_Store' in sample : continue
                 the_var= None
                 # make varinaces
-                if os.path.exists(os.path.join(self.trainingPath, sample + '/basicVariance.png')):
-                    the_var = cv2.imread(os.path.join(self.trainingPath, sample + '/basicVariance.png'), 0)
+                if os.path.exists(os.path.join(self.testPath, sample + '/basicVariance.png')):
+                    the_var = cv2.imread(os.path.join(self.testPath, sample + '/basicVariance.png'), 0)
                 else:
-                    files = sorted(glob(os.path.join(self.trainingPath, "%s/frame*.png" % sample)))
-                    with np.vstack([self.change_size(cv2.imread(x, 0)) for x in files]) as files:
-                        variances = np.var(files, axis=0)
-                        variances = (variances / np.max(variances)) * 255
-                        del (files )
-                        cv2.imwrite(os.path.join(self.trainingPath, sample + '/basicVariance.png'), variances)
-                        the_var = variances
+                    files = sorted(glob(os.path.join(self.testPath, "%s/frame*.png" % sample)))
+                    files = np.vstack([self.change_size(cv2.imread(x, 0)) for x in files])
+                    variances = np.var(files, axis=0)
+                    variances = (variances / np.max(variances)) * 255
+                    del (files )
+                    cv2.imwrite(os.path.join(self.testPath, sample + '/basicVariance.png'), variances)
 
+                    the_var = variances
+
+                the_var = np.expand_dims(the_var.reshape(the_var.shape + (1,)), axis=0)
                 test_vars[sample] = the_var
 
                 t = [cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0)
@@ -111,6 +113,13 @@ class BasicVariance ( preprocessor ):
 
                 t = [np.expand_dims(x.reshape(x.shape + (1,)), axis=0)  for x in t]
 
+                temp_vars  = []
+                for i in range ( len(t) ):
+                    temp_vars.append(the_var)
+
+                test_vars[sample] = np.vstack(temp_vars)
+
+
                 test_dic[sample] = np.vstack(t)
 
 
@@ -119,6 +128,7 @@ class BasicVariance ( preprocessor ):
 
         train_x = np.vstack(train_x)
         train_y = np.vstack(train_y)
+        train_vars = np.vstack(train_vars)
         # test_x = np.vstack(test_x)
 
         train_x = train_x.reshape(train_x.shape + (1,))
