@@ -10,10 +10,7 @@ from src.preprocessing import preprocessor
 from src.preprocessing import EveryOther
 from src.segmentation.segmenter import Segmenter
 from src.segmentation.UnetSegmenter import UNET_Segmenter
-# from src.postprocessing.postprocessing import postProcess
-# from src.Classifiers.Classifier import Classifier
-# from src.Classifiers.FCN import FCN_Classifier
-# from src.Classifiers.UNet_Classifier import UNET_Classifier
+from src.preprocessing.BasicVariance import BasicVariance
 from src.postprocessing.Postprocessor import  postProcess
 description = ' '
 
@@ -40,7 +37,7 @@ parser.add_argument("-e", "--epoch", default="1024",
 parser.add_argument("-b", "--batch", default="4",
                     help='sets the batch size for training the models')
 
-parser.add_argument("-pp", "--preprocessor", default="sum",
+parser.add_argument("-pp", "--preprocessor", default="everyother",
                     help='Chooses the Preprcessor to be applied ')
 
 parser.add_argument("-ep", "--exportpath", default=None,
@@ -70,6 +67,9 @@ the_Segmenter = None
 if (args.preprocessor == "everyother"):
     the_preprocessor = EveryOther.EveryOther(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
                                          exportPath=args.exportpath, importPath=args.exportpath )
+elif (args.preprocessor== 'basicvar'):
+    the_preprocessor = BasicVariance(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
+                                         exportPath=args.exportpath, importPath=args.exportpath, skip_count=25 )
 else:
     the_preprocessor = preprocessor.preprocessor()
 
@@ -93,7 +93,7 @@ x_train, y_train, x_test, test_size_ref = None, None, None, None
 # check if there is no data, read them from input ( this will take time! )
 if  ( x_train is None):
     logging.info("Loading data from original data")
-    x_train, y_train, x_test, test_size_ref = the_preprocessor.preprocess()
+    x_train, y_train, x_test, test_size_ref , train_var, test_vars = the_preprocessor.preprocess()
     logging.info("Done loading data from original data")
 else:
     logging.info("data loaded from pre-calculated files")
