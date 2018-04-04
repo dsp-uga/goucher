@@ -59,7 +59,7 @@ class Segmenter :
         if( self.classifier_name=='DUALINPUTUNET' ):
             temp = self.trained_model.predict([data_dic, data_var])
         else :
-            temp = self.trained_model.predict(data_dic)
+            temp = self.trained_model.predict(data_dic, batch_size=5)
         # print ( type( temp ) )
         # print( temp.shape )
         # print(np.max(temp) , np.mean( temp ), np.min( temp ) )

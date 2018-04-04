@@ -29,6 +29,10 @@ parser.add_argument("-m", "--model", default="unet",
 parser.add_argument("-t", "--train", action="store_true",
                     help='To ensure a model is being trained')
 
+parser.add_argument("-ct", "--continuetraining", action="store_true",
+                    help='laods the saved model and continues the trainig from there')
+
+
 parser.add_argument("-p", "--predict", action="store_true",
                     help='To ensure a segmentation is performed on the test set (This requires --testset to have value)')
 
@@ -70,7 +74,7 @@ if (args.preprocessor == "everyother"):
                                          exportPath=args.exportpath, importPath=args.exportpath )
 elif (args.preprocessor== 'basicvar'):
     the_preprocessor = BasicVariance(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
-                                         exportPath=args.exportpath, importPath=args.exportpath, skip_count=25 )
+                                         exportPath=args.exportpath, importPath=args.exportpath, skip_count=5 )
 else:
     the_preprocessor = preprocessor.preprocessor()
 
@@ -105,6 +109,12 @@ else:
 
 # --------------- train model!
 if( args.train ):
+
+    # if training is to continue from a previous state
+    if args.continuetraining:
+        logging.info("Loading previously saved model")
+        the_Segmenter.load_model(args.exportpath)
+
     logging.info("Starting training")
     if (args.model == 'unet'):
         model = the_Segmenter.train(x_train=x_train, y_train=y_train, epochs=int(args.epoch) ,batch_size=int(args.batch) )
