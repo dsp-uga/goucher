@@ -180,7 +180,11 @@ def nn_base(input_tensor=None, trainable=False):
     else:
         bn_axis = 1
 
-  
+
+    x = Convolution2D(64, (7, 7), strides=(2, 2), name='conv1', trainable = trainable)(x)
+    x = FixedBatchNormalization(axis=bn_axis, name='bn_conv1')(x)
+    x = Activation('relu')(x)    
+    x = MaxPooling2D((3, 3), strides=(2, 2))(x)
 	x=model
         model = Model(inputs=[inputs], outputs=[conv10])
         model.compile(optimizer=Adam(lr=1e-5), loss=UNET_Segmenter.dice_coef_loss, metrics=[UNET_Segmenter.dice_coef])
