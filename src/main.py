@@ -10,10 +10,8 @@ from src.preprocessing import preprocessor
 from src.preprocessing import EveryOther
 from src.segmentation.segmenter import Segmenter
 from src.segmentation.UnetSegmenter import UNET_Segmenter
-# from src.postprocessing.postprocessing import postProcess
-# from src.Classifiers.Classifier import Classifier
-# from src.Classifiers.FCN import FCN_Classifier
-# from src.Classifiers.UNet_Classifier import UNET_Classifier
+from src.segmentation.DualInputUNETSegmenter import Dual_Input_UNET_Segmenter
+from src.preprocessing.BasicVariance import BasicVariance
 from src.postprocessing.Postprocessor import  postProcess
 description = ' '
 
@@ -31,6 +29,10 @@ parser.add_argument("-m", "--model", default="unet",
 parser.add_argument("-t", "--train", action="store_true",
                     help='To ensure a model is being trained')
 
+parser.add_argument("-ct", "--continuetraining", action="store_true",
+                    help='laods the saved model and continues the trainig from there')
+
+
 parser.add_argument("-p", "--predict", action="store_true",
                     help='To ensure a segmentation is performed on the test set (This requires --testset to have value)')
 
@@ -40,7 +42,7 @@ parser.add_argument("-e", "--epoch", default="1024",
 parser.add_argument("-b", "--batch", default="4",
                     help='sets the batch size for training the models')
 
-parser.add_argument("-pp", "--preprocessor", default="sum",
+parser.add_argument("-pp", "--preprocessor", default="everyother",
                     help='Chooses the Preprcessor to be applied ')
 
 parser.add_argument("-ep", "--exportpath", default=None,
@@ -70,6 +72,9 @@ the_Segmenter = None
 if (args.preprocessor == "everyother"):
     the_preprocessor = EveryOther.EveryOther(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
                                          exportPath=args.exportpath, importPath=args.exportpath )
+elif (args.preprocessor== 'basicvar'):
+    the_preprocessor = BasicVariance(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
+                                         exportPath=args.exportpath, importPath=args.exportpath, skip_count=5 )
 else:
     the_preprocessor = preprocessor.preprocessor()
 
@@ -77,6 +82,8 @@ else:
 
 if args.model == "unet":
     the_Segmenter = UNET_Segmenter()
+if args.model == 'dualinpuunet':
+    the_Segmenter = Dual_Input_UNET_Segmenter()
 else:
     the_Segmenter = Segmenter()
 
@@ -93,7 +100,7 @@ x_train, y_train, x_test, test_size_ref = None, None, None, None
 # check if there is no data, read them from input ( this will take time! )
 if  ( x_train is None):
     logging.info("Loading data from original data")
-    x_train, y_train, x_test, test_size_ref = the_preprocessor.preprocess()
+    x_train, y_train, x_test, test_size_ref , train_var, test_vars = the_preprocessor.preprocess()
     logging.info("Done loading data from original data")
 else:
     logging.info("data loaded from pre-calculated files")
@@ -102,12 +109,22 @@ else:
 
 # --------------- train model!
 if( args.train ):
+
+    # if training is to continue from a previous state
+    if args.continuetraining:
+        logging.info("Loading previously saved model")
+        the_Segmenter.load_model(args.exportpath)
+
     logging.info("Starting training")
-    model = the_Segmenter.train(x_train=x_train, y_train=y_train , epochs=int(args.epoch) ,batch_size=int(args.batch) )
-    the_Segmenter.saveModel( args.exportpath )
+    if (args.model == 'unet'):
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, epochs=int(args.epoch) ,batch_size=int(args.batch) )
+    else:
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var, epochs=int(args.epoch),
+                                    batch_size=int(args.batch))
+    the_Segmenter.saveModel(args.exportpath)
     logging.info("Done with training")
-else :
-    model = the_Segmenter.load_model( args.exportpath )
+else:
+    model = the_Segmenter.load_model(args.exportpath)
 
 # --------------- train model!
 
@@ -118,7 +135,10 @@ if( args.predict  and x_test ):
     import numpy as np
     for key in x_test :
         print( x_test[key].shape , np.max( x_test[key]) , np.min( x_test[key] )  )
-        predicted[key] = the_Segmenter.predict( x_test[key] )
+        if test_vars is not None :
+            predicted[key] = the_Segmenter.predict(x_test[key] , test_vars[key] )
+        else:
+            predicted[key] = the_Segmenter.predict( x_test[key] )
 
 
     # save the results
