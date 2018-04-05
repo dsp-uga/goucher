@@ -14,9 +14,10 @@ from src.segmentation.UnetSegmenter import UNET_Segmenter
 from src.segmentation.DualInputUNETSegmenter import Dual_Input_UNET_Segmenter
 from src.segmentation.TripleInputUNETSegmenter import Triple_Input_UNET_Segmenter
 from src.preprocessing.BasicVariance import BasicVariance
-
+from src.preprocessing.OpticalFlowMagnitudeSum import OpticalFlowMagnitudeSum
 from src.preprocessing.OpticalFlow import OpticalFlow
 from src.postprocessing.Postprocessor import  postProcess
+from src.segmentation.FourInputUNETSegmentation import Four_Input_UNET_Segmenter
 
 description = ' '
 
@@ -83,6 +84,9 @@ elif (args.preprocessor== 'basicvar'):
 elif (args.preprocessor=='opticalflow'):
     the_preprocessor = OpticalFlow(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
                                          exportPath=args.exportpath, importPath=args.exportpath, skip_count=25 )
+elif ( args.preprocessor =='ofmag' ):
+    the_preprocessor = OpticalFlowMagnitudeSum(images_size=[640, 640], trainingPath=args.dataset, testPath=args.testset,
+                                   exportPath=args.exportpath, importPath=args.exportpath, skip_count=25)
 else:
     the_preprocessor = preprocessor.preprocessor()
 
@@ -94,6 +98,8 @@ if args.model == 'dualinpuunet':
     the_Segmenter = Dual_Input_UNET_Segmenter()
 elif args.model == 'of':
     the_Segmenter = Triple_Input_UNET_Segmenter()
+elif args.model =='ofmag':
+    the_Segmenter = Four_Input_UNET_Segmenter()
 else:
     the_Segmenter = Segmenter()
 
@@ -110,7 +116,7 @@ x_train, y_train, x_test, test_size_ref = None, None, None, None
 # check if there is no data, read them from input ( this will take time! )
 if  ( x_train is None):
     logging.info("Loading data from original data")
-    x_train, y_train, x_test, test_size_ref , train_var, test_vars, train_of , test_of = the_preprocessor.preprocess()
+    x_train, y_train, x_test, test_size_ref , train_var, test_vars, train_of , test_of, train_of_mag , test_of_mag = the_preprocessor.preprocess()
     logging.info("Done loading data from original data")
 else:
     logging.info("data loaded from pre-calculated files")
@@ -134,6 +140,10 @@ if( args.train ):
     elif args.model == 'of' :
         model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var , of_train=train_of , epochs=int(args.epoch),
                                     batch_size=int(args.batch))
+    elif args.model== 'ofmag':
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var, of_train=train_of, of_mag_train=train_of_mag,
+                                    epochs=int(args.epoch),
+                                    batch_size=int(args.batch))
     the_Segmenter.saveModel(args.exportpath)
     logging.info("Done with training")
 else:
@@ -155,7 +165,8 @@ if( args.predict  and x_test ):
             predicted[key] = the_Segmenter.predict(x_test[key], data_var=test_vars[key])
         elif args.model == 'of':
             predicted[key] = the_Segmenter.predict(x_test[key], data_var=test_vars[key] , data_of= test_of[key]  )
-
+        elif args.model== 'ofmag':
+            predicted[key] = the_Segmenter.predict(x_test[key], data_var=test_vars[key], data_of=test_of[key], data_of_mag=test_of_mag[key])
         # if test_vars is not None :
         #     predicted[key] = the_Segmenter.predict(x_test[key] , test_vars[key] )
         # else:

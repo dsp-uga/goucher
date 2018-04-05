@@ -51,16 +51,16 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
                 else:
                     images = [self.change_size(cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)), 0))
                      for i in range(0, 99)]
-                    prvs = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+                    prvs = images[0] # cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
 
                     index = 0
                     totale = np.zeros((640,640)).astype(float)
-
+                    print( len(images ))
                     while (1):
                         index += 1
-                        if index == 100: break
+                        if index == 99: break
                         frame2 = images[index]
-                        next = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+                        next = frame2  #cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
                         flow = cv2.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
                         mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
                         totale += mag
@@ -71,7 +71,7 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
 
                     cv2.imwrite(os.path.join(self.trainingPath, sample + '/OpticalFlowMagSum.png'), totale)
 
-                    the_of_mag = bgr
+                    the_of_mag =totale
 
                 the_of_mag =  np.expand_dims(the_of_mag.reshape(the_of_mag.shape + (1,)), axis=0) #   np.expand_dims(the_of, axis=0)
 
@@ -159,7 +159,7 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
 
                     while (1):
                         index += 1
-                        if index == 100: break
+                        if index == 99: break
                         frame2 = images[index]
                         next = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
                         flow = cv2.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
@@ -170,8 +170,8 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
                     totale = cv2.normalize(totale, None, 0, 255, cv2.NORM_MINMAX)
 
                     cv2.imwrite(os.path.join(self.testPath, sample + '/OpticalFlowMagSum.png'), totale)
+                    the_of_mag = totale
 
-                    the_of_mag = bgr
 
                 the_of_mag = np.expand_dims(the_of_mag.reshape(the_of_mag.shape + (1,)),
                                             axis=0)  # np.expand_dims(the_of, axis=0)
