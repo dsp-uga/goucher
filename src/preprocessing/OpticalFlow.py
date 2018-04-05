@@ -45,8 +45,8 @@ class OpticalFlow ( preprocessor ):
                 mask_path = os.path.join( self.trainingPath, sample + '/mask.png')
 
 
-                if False: #os.path.exists(os.path.join( self.trainingPath, sample + '/OpticalFlow.png')  ):
-                    the_of = cv2.imread( os.path.join( self.trainingPath, sample + '/OpticalFlow.png') ,0 )
+                if  os.path.exists(os.path.join( self.trainingPath, sample + '/OpticalFlow.png')  ):
+                    the_of = cv2.imread( os.path.join( self.trainingPath, sample + '/OpticalFlow.png') , 1 )
                 else:
                     frame1 = self.cv_resize( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0001.png')))
                     frame2 = self.cv_resize( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0050.png')))
@@ -114,8 +114,8 @@ class OpticalFlow ( preprocessor ):
                 if  '.DS_Store' in sample : continue
                 the_var= None
 
-                if  False: # os.path.exists(os.path.join( self.testPath, sample + '/OpticalFlow.png')  ):
-                    the_of = cv2.imread( os.path.join( self.testPath, sample + '/OpticalFlow.png') ,0)
+                if  os.path.exists(os.path.join( self.testPath, sample + '/OpticalFlow.png')  ):
+                    the_of = cv2.imread( os.path.join( self.testPath, sample + '/OpticalFlow.png') ,1)
                 else:
                     frame1 = self.cv_resize( cv2.imread( os.path.join( self.testPath, sample + '/frame0001.png')))
                     frame2 = self.cv_resize( cv2.imread( os.path.join( self.testPath, sample + '/frame0050.png')))
