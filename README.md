@@ -88,7 +88,7 @@ Sample ruuning command
 
 ### Contributors
 
-See [contributor]() file for more details.
+See [contributor](https://github.com/dsp-uga/goucher/blob/master/CONTRIBUTORS.md) file for more details.
 
 ### License
 
