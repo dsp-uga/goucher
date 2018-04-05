@@ -60,10 +60,3 @@ def Tiramisu(layer_per_block, n_pool=5, growth_rate=16):
     t = Conv2D(1, kernel_size=(1, 1), padding='same', kernel_initializer='he_uniform', data_format='channels_last')(t)
     output_layer = Activation('sigmoid')(t)
     return Model(inputs=input_layer, outputs=output_layer)
-
-
-#layer_per_block = [4, 5, 7, 10, 12, 15, 12, 10, 7, 5, 4]
-
-#tiramisu = Tiramisu(layer_per_block)
-#plot_model(tiramisu, to_file='model.pdf')
-#tiramisu.summary()
