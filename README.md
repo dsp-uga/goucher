@@ -126,7 +126,7 @@ Other resources used have been cited in their corresponding wiki page.
 
 ### References
 
-* https://arxiv.org/pdf/1707.06314.pdf- Research paper for U-net
+* https://arxiv.org/pdf/1707.06314.pdf Research paper for U-net
 * https://github.com/dsp-uga/sp18/tree/master/projects/p4
 * https://github.com/yhenon/keras-frcnn
 * https://arxiv.org/abs/1504.08083
