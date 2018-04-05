@@ -53,12 +53,25 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
 
   **@Vamsi Please add here**
   
-  ### Execution
-  
-  The following can be refered for execution of main function
-  
-  
-   ` src/main.py is the main file to run the project.`
+ ### Execution
+Main Program
 
+  ` src/main.py is the main file to run the project`
+  
+Following keys are settable through command arguments :
 
+* `--epoch` : sets number of epochs for which training will go ( this is applicable to UNET and R-FCNN models )
 
+* `--dataset` : this sets the path to the training files. target folder should contain one folder per sample and they have to comply to the original dataset format
+* `--testset` : this is the path test samples, this folder should contain one folder per each sample and they should follow the original dataset's format
+* `--model` : this sets the model to either of UNET/FCN/tiramisu
+* `--train` : if supplied training will be done
+* `--exportpath` : set the path to which numpy arrays for train and test file as well as model will be saved. note that this same path will be used to load them
+* `--predict` : if supplied, prediction will also be done on the data set
+* `--logfile` : sets the path to the logging file
+* `--preprocessor` : selects the preprocessor to be applied to the dataset
+* `--batch` : sets the batch size for the training models, this only applies to UNET and FCN
+
+Sample ruuning command
+
+`$ python main.py --train --predict --exportpath="../output" --dataset="../data/train" --testset="../data/test"`
