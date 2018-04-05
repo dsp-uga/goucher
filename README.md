@@ -86,4 +86,18 @@ Sample ruuning command
 
 `$ python main.py --train --predict --exportpath="../output" --dataset="../data/train" --testset="../data/test"`
 
+### Contributors
+
+See [contributor]() file for more details.
+
+### License
+
+This project is licensed under the MIT License - see the [License file](https://github.com/dsp-uga/goucher/blob/master/LICENSE) for details
+
+### Acknowledgments
+
+* This project was completed as a part of the Data Science Practicum 2018 course at the University of Georgia
+* Dr. Shannon Quinn is responsible for the problem formulation and initial guidance towards solution methods.
+* We partly used provided code from This Repository. It provides implementation of Fully Convolutional Networks with Keras
+Other resources used have been cited in their corresponding wiki page.
 
