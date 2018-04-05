@@ -50,7 +50,7 @@ class Segmenter :
 
         return self.trained_model
 
-    def predict(self, data_dic, data_var = None ):
+    def predict(self, data_dic, data_var = None , data_of = None):
         """
         this function runs the prediction on the data
         :param data_dic:
@@ -58,7 +58,9 @@ class Segmenter :
         """
         if( self.classifier_name=='DUALINPUTUNET' ):
             temp = self.trained_model.predict([data_dic, data_var])
-        else :
+        elif  self.classifier_name=='TRIPPLEINPUTUNET'  :
+            temp = self.trained_model.predict([data_dic, data_var, data_of])
+        else:
             temp = self.trained_model.predict(data_dic, batch_size=5)
         # print ( type( temp ) )
         # print( temp.shape )
