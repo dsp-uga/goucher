@@ -111,9 +111,11 @@ class Triple_Input_UNET_Segmenter(Segmenter):
         kernel_size = 3
         input_shape = (640, 640, 1)
 
+        print("***************" , type( of_train) )
+
         main_input= Input(input_shape, name='main_input')
         var_input = Input(input_shape, name='v_input')
-        of_input = Input( (640,640,3), name='of_input' )
+        of_input = Input( ( 640, 640, 3 ), name='of_input' )
 
         input_prob_inverse = Input(input_shape)
         # Conv3D(filters,(3,3,3),sjfsjf)
@@ -205,7 +207,7 @@ class Triple_Input_UNET_Segmenter(Segmenter):
 
             conv10 = Conv2D(1, (1, 1), activation='sigmoid', name='conv10')(conv9)
 
-            model = Model(inputs=[main_input, var_input,of_input], outputs=[conv10])
+            model = Model(inputs=[main_input, var_input, of_input], outputs=[conv10])
             model.compile(optimizer=Adam(lr=1e-5), loss=Triple_Input_UNET_Segmenter.dice_coef_loss,
                           metrics=[Triple_Input_UNET_Segmenter.dice_coef])
 
@@ -217,7 +219,7 @@ class Triple_Input_UNET_Segmenter(Segmenter):
         print(model.summary())
 
         # training network
-        model.fit([x_train, v_train,of_input], [y_train], batch_size=batch_size, epochs=epochs, shuffle=True)
+        model.fit([x_train, v_train, of_train], [y_train], batch_size=batch_size, epochs=epochs, shuffle=True)
 
         # set as class's model to be used for prediction
         self.trained_model = model

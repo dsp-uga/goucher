@@ -13,7 +13,7 @@ import cv2
 import json
 
 
-class BasicVariance ( preprocessor ):
+class OpticalFlow ( preprocessor ):
 
     def __init__(self, exportPath, trainingPath , testPath , images_size=[640,640], importPath = None , skip_count =5):
         self.exportPath = exportPath
@@ -45,11 +45,11 @@ class BasicVariance ( preprocessor ):
                 mask_path = os.path.join( self.trainingPath, sample + '/mask.png')
 
 
-                if os.path.exists(os.path.join( self.trainingPath, sample + '/OpticalFlow.png')  ):
-                    the_of = cv2.imread( os.path.join( self.trainingPath, sample + '/OpticalFlow.png') ,1 )
+                if False: #os.path.exists(os.path.join( self.trainingPath, sample + '/OpticalFlow.png')  ):
+                    the_of = cv2.imread( os.path.join( self.trainingPath, sample + '/OpticalFlow.png') ,0 )
                 else:
-                    frame1 = self.change_size( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0001.png')))
-                    frame2 = self.change_size( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0050.png')))
+                    frame1 = self.cv_resize( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0001.png')))
+                    frame2 = self.cv_resize( cv2.imread( os.path.join( self.trainingPath, sample + '/frame0050.png')))
                     prvs = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
                     hsv = np.zeros_like(frame1)
                     hsv[..., 1] = 255
@@ -64,10 +64,11 @@ class BasicVariance ( preprocessor ):
 
                     the_of = bgr
 
-                the_of =  np.expand_dims(the_of.reshape(the_of.shape + (1,)), axis=0)
+                the_of = np.expand_dims(the_of,
+                                            axis=0)  # np.expand_dims(the_of.reshape(the_of.shape + (1,)), axis=0) #   np.expand_dims(the_of, axis=0)
 
                 # make varinaces
-                if os.path.exists(os.path.join( self.trainingPath, sample + '/basicVariance.png')  ):
+                if  os.path.exists(os.path.join( self.trainingPath, sample + '/basicVariance.png')  ):
                     the_var = cv2.imread( os.path.join( self.trainingPath, sample + '/basicVariance.png') ,0 )
                 else:
                     files = sorted( glob( os.path.join(self.trainingPath, "%s/frame*.png" % sample) ) )
@@ -113,11 +114,11 @@ class BasicVariance ( preprocessor ):
                 if  '.DS_Store' in sample : continue
                 the_var= None
 
-                if os.path.exists(os.path.join( self.testPath, sample + '/OpticalFlow.png')  ):
-                    the_of = cv2.imread( os.path.join( self.testPath, sample + '/OpticalFlow.png') ,1 )
+                if  False: # os.path.exists(os.path.join( self.testPath, sample + '/OpticalFlow.png')  ):
+                    the_of = cv2.imread( os.path.join( self.testPath, sample + '/OpticalFlow.png') ,0)
                 else:
-                    frame1 = self.change_size( cv2.imread( os.path.join( self.testPath, sample + '/frame0001.png')))
-                    frame2 = self.change_size( cv2.imread( os.path.join( self.testPath, sample + '/frame0050.png')))
+                    frame1 = self.cv_resize( cv2.imread( os.path.join( self.testPath, sample + '/frame0001.png')))
+                    frame2 = self.cv_resize( cv2.imread( os.path.join( self.testPath, sample + '/frame0050.png')))
                     prvs = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
                     hsv = np.zeros_like(frame1)
                     hsv[..., 1] = 255
@@ -132,7 +133,7 @@ class BasicVariance ( preprocessor ):
 
                     the_of = bgr
 
-                the_of =  np.expand_dims(the_of.reshape(the_of.shape + (1,)), axis=0)
+                the_of =   np.expand_dims(the_of, axis=0) # np.expand_dims(the_of.reshape(the_of.shape + (1,)), axis=0) #   np.expand_dims(the_of, axis=0)
 
 
                 # make varinaces
@@ -152,7 +153,7 @@ class BasicVariance ( preprocessor ):
                 test_vars[sample] = the_var
 
                 t = [cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0)
-                     for i in range(0, 99, 8)]
+                     for i in range(0, 99, 25)]
 
                 test_size_ref[sample] = t[0].shape
 
@@ -177,6 +178,7 @@ class BasicVariance ( preprocessor ):
         train_x = np.vstack(train_x)
         train_y = np.vstack(train_y)
         train_vars = np.vstack(train_vars)
+        train_of = np.vstack( train_of )
         # test_x = np.vstack(test_x)
 
         train_x = train_x.reshape(train_x.shape + (1,))
@@ -195,3 +197,26 @@ class BasicVariance ( preprocessor ):
         #     self.save_to_file()
 
         return train_x , train_y , test_dic, test_size_ref, train_vars, test_vars, train_of , tesr_ofs
+
+    def cv_resize (self, im):
+        """
+        code from : https://jdhao.github.io/2017/11/06/resize-image-to-square-with-padding/
+        :return: 
+        """
+        desired_size = 640
+        old_size = im.shape[:2]  # old_size is in (height, width) format
+        ratio = desired_size/ max(old_size)
+        new_size = tuple([int(x * ratio) for x in old_size])
+
+        # new_size should be in (width, height) format
+        im = cv2.resize(im, (new_size[1], new_size[0]))
+
+        delta_w = desired_size - new_size[1]
+        delta_h = desired_size - new_size[0]
+        top, bottom = delta_h // 2, delta_h - (delta_h // 2)
+        left, right = delta_w // 2, delta_w - (delta_w // 2)
+
+        color = [0, 0, 0]
+        new_im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT,
+                                    value=color)
+        return new_im

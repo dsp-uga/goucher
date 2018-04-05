@@ -8,11 +8,16 @@ import os
 import logging
 from src.preprocessing import preprocessor
 from src.preprocessing import EveryOther
+from src.preprocessing import OpticalFlow
 from src.segmentation.segmenter import Segmenter
 from src.segmentation.UnetSegmenter import UNET_Segmenter
 from src.segmentation.DualInputUNETSegmenter import Dual_Input_UNET_Segmenter
+from src.segmentation.TripleInputUNETSegmenter import Triple_Input_UNET_Segmenter
 from src.preprocessing.BasicVariance import BasicVariance
+
+from src.preprocessing.OpticalFlow import OpticalFlow
 from src.postprocessing.Postprocessor import  postProcess
+
 description = ' '
 
 parser = argparse.ArgumentParser(description=description, add_help='How to use', prog='python main.py <options>')
@@ -75,6 +80,9 @@ if (args.preprocessor == "everyother"):
 elif (args.preprocessor== 'basicvar'):
     the_preprocessor = BasicVariance(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
                                          exportPath=args.exportpath, importPath=args.exportpath, skip_count=5 )
+elif (args.preprocessor=='opticalflow'):
+    the_preprocessor = OpticalFlow(images_size=[640, 640],trainingPath=args.dataset, testPath=args.testset,
+                                         exportPath=args.exportpath, importPath=args.exportpath, skip_count=25 )
 else:
     the_preprocessor = preprocessor.preprocessor()
 
@@ -84,6 +92,8 @@ if args.model == "unet":
     the_Segmenter = UNET_Segmenter()
 if args.model == 'dualinpuunet':
     the_Segmenter = Dual_Input_UNET_Segmenter()
+elif args.model == 'of':
+    the_Segmenter = Triple_Input_UNET_Segmenter()
 else:
     the_Segmenter = Segmenter()
 
@@ -100,7 +110,7 @@ x_train, y_train, x_test, test_size_ref = None, None, None, None
 # check if there is no data, read them from input ( this will take time! )
 if  ( x_train is None):
     logging.info("Loading data from original data")
-    x_train, y_train, x_test, test_size_ref , train_var, test_vars = the_preprocessor.preprocess()
+    x_train, y_train, x_test, test_size_ref , train_var, test_vars, train_of , test_of = the_preprocessor.preprocess()
     logging.info("Done loading data from original data")
 else:
     logging.info("data loaded from pre-calculated files")
@@ -118,8 +128,11 @@ if( args.train ):
     logging.info("Starting training")
     if (args.model == 'unet'):
         model = the_Segmenter.train(x_train=x_train, y_train=y_train, epochs=int(args.epoch) ,batch_size=int(args.batch) )
-    else:
+    elif args.model== 'dualinpuunet' :
         model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var, epochs=int(args.epoch),
+                                    batch_size=int(args.batch))
+    elif args.model == 'of' :
+        model = the_Segmenter.train(x_train=x_train, y_train=y_train, v_train=train_var , of_train=train_of , epochs=int(args.epoch),
                                     batch_size=int(args.batch))
     the_Segmenter.saveModel(args.exportpath)
     logging.info("Done with training")
@@ -135,10 +148,18 @@ if( args.predict  and x_test ):
     import numpy as np
     for key in x_test :
         print( x_test[key].shape , np.max( x_test[key]) , np.min( x_test[key] )  )
-        if test_vars is not None :
-            predicted[key] = the_Segmenter.predict(x_test[key] , test_vars[key] )
-        else:
-            predicted[key] = the_Segmenter.predict( x_test[key] )
+
+        if args.model == "unet":
+            predicted[key] = the_Segmenter.predict(x_test[key])
+        if args.model == 'dualinpuunet':
+            predicted[key] = the_Segmenter.predict(x_test[key], data_var=test_vars[key])
+        elif args.model == 'of':
+            predicted[key] = the_Segmenter.predict(x_test[key], data_var=test_vars[key] , data_of= test_of[key]  )
+
+        # if test_vars is not None :
+        #     predicted[key] = the_Segmenter.predict(x_test[key] , test_vars[key] )
+        # else:
+        #     predicted[key] = the_Segmenter.predict( x_test[key] )
 
 
     # save the results
