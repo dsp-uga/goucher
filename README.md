@@ -47,11 +47,13 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
   Fast R-CNN builds on previous     work to efficiently classify object proposals using deep convolutional networks. Compared to  previous work, Fast R-CNN employs several innovations to improve training and testing speed while also increasing detection accuracy. Fast R-CNN  trains the very deep      VGG16 network 9x faster than R-CNN.
 
   Unfortunately this model did not work well and we continued implementing with U-NET.
-  More abiut the model is added in experiment-rcn branch
+  More about the model is added in experiment-rcn branch
 
 * #### The One Hundred Layers Tiramisu:
 
-  **@Vamsi Please add here**
+The typical segmentation architecture is composed of a downsampling path responsible for extracting coarse semantic features, followed by an upsampling path trained to recover the input image resolution at the output of the model and, optionally, a post-processing module (e.g. Conditional Random Fields) to refine the model predictions. We extend DenseNets to deal with the problem of semantic segmentation.
+
+ Althoug this network required GPU and it took too much time for processing when compare to U-NET. 
 
 ### Downloader
 
@@ -86,6 +88,27 @@ Sample ruuning command
 
 `$ python main.py --train --predict --exportpath="../output" --dataset="../data/train" --testset="../data/test"`
 
+### Final Output
+
+We predit the cilia region in form of an image as shown
+
+<p align="left">
+  <img width="300" height="200" src="https://github.com/dsp-uga/goucher/blob/Experimental-RCN/analysis/initial%20image">
+  <img width="300" height="200" src="https://github.com/dsp-uga/goucher/blob/Experimental-RCN/analysis/final%20image">
+</p>
+
+where
+
+**LEFT:** A single frame from the grayscale video. 
+
+**RIGHT:** A 3-label segmentation of the video 
+
+For which label 2 is cilia.
+
+The result for testing dataset were submitted on AutoLab.
+
+**The overalll accuracy range achieved is around 39-44 % depening uopn batch size, kernel, epoch etc.**
+
 ### Contributors
 
 See [contributor](https://github.com/dsp-uga/goucher/blob/master/CONTRIBUTORS.md) file for more details.
@@ -100,4 +123,11 @@ This project is licensed under the MIT License - see the [License file](https://
 * Dr. Shannon Quinn is responsible for the problem formulation and initial guidance towards solution methods.
 * We partly used provided code from This Repository. It provides implementation of Fully Convolutional Networks with Keras
 Other resources used have been cited in their corresponding wiki page.
+
+### References
+
+* https://arxiv.org/pdf/1707.06314.pdf- Research paper for U-net
+* https://github.com/dsp-uga/sp18/tree/master/projects/p4
+* https://github.com/yhenon/keras-frcnn
+* https://arxiv.org/abs/1504.08083
 
