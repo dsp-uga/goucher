@@ -185,6 +185,21 @@ def nn_base(input_tensor=None, trainable=False):
     x = FixedBatchNormalization(axis=bn_axis, name='bn_conv1')(x)
     x = Activation('relu')(x)    
     x = MaxPooling2D((3, 3), strides=(2, 2))(x)
+	x = conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1), trainable = trainable)
+    x = identity_block(x, 3, [64, 64, 256], stage=2, block='b', trainable = trainable)
+    x = identity_block(x, 3, [64, 64, 256], stage=2, block='c', trainable = trainable)
+
+    x = conv_block(x, 3, [128, 128, 512], stage=3, block='a', trainable = trainable)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='b', trainable = trainable)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='c', trainable = trainable)
+    x = identity_block(x, 3, [128, 128, 512], stage=3, block='d', trainable = trainable)
+
+    x = conv_block(x, 3, [256, 256, 1024], stage=4, block='a', trainable = trainable)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='b', trainable = trainable)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='c', trainable = trainable)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='d', trainable = trainable)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='e', trainable = trainable)
+    x = identity_block(x, 3, [256, 256, 1024], stage=4, block='f', trainable = trainable)
 	x=model
         model = Model(inputs=[inputs], outputs=[conv10])
         model.compile(optimizer=Adam(lr=1e-5), loss=UNET_Segmenter.dice_coef_loss, metrics=[UNET_Segmenter.dice_coef])
