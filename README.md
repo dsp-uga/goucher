@@ -25,3 +25,40 @@ The project requires the following technologies to be installed.
 * Instructions to download and install OpenCV Library can be found [here](https://opencv.org/).
 
 Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wiki/Environment-Setup) for more detailed installation instruction.
+
+### Approach
+
+* #### UNET
+    U-Net is convolutional network architecture for fast and precise segmentation of images.This deep neural network is implemented with    Keras functional API, which makes it extremely easy to experiment with different interesting architectures.
+
+  In first attempt we just trained the network with normal images extracted form the frame.
+
+  In Second attempt variance was added as a one more input in U-NET
+
+  and Finally we also added the Optical Flow form Opencv as the third input in U-NET.
+
+  Thus,
+
+  #### Input for U-NET=Images+Variance+Optical-flow
+  To know more about variance go-to wiki preprocessing page or click [here](https://github.com/dsp-uga/goucher/wiki/Pre-Processing)
+  
+* #### Fast RCN
+
+  Fast R-CNN builds on previous     work to efficiently classify object proposals using deep convolutional networks. Compared to  previous work, Fast R-CNN employs several innovations to improve training and testing speed while also increasing detection accuracy. Fast R-CNN  trains the very deep      VGG16 network 9x faster than R-CNN.
+
+  Unfortunately this model did not work well and we continued implementing with U-NET.
+  More abiut the model is added in experiment-rcn branch
+
+* #### The One Hundred Layers Tiramisu:
+
+  **@Vamsi Please add here**
+  
+  ### Execution
+  
+  The following can be refered for execution of main function
+  
+  
+   ` src/main.py is the main file to run the project.`
+
+
+
