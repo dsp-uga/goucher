@@ -52,6 +52,16 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
 * #### The One Hundred Layers Tiramisu:
 
   **@Vamsi Please add here**
+
+### Downloader
+
+There is a per-written bash script to download the data-set locally.
+
+File 'downloader.sh' is a bash script to download files from the google storage.
+This can be found [here](https://github.com/dsp-uga/goucher/blob/Experimental-RCN/data/downloader.sh) in the repository.
+To run the downloader use the following command in your local directory :
+
+`$bash downloader.sh`
   
  ### Execution
 Main Program
@@ -75,3 +85,5 @@ Following keys are settable through command arguments :
 Sample ruuning command
 
 `$ python main.py --train --predict --exportpath="../output" --dataset="../data/train" --testset="../data/test"`
+
+
