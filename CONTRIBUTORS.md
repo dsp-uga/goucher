@@ -10,10 +10,14 @@
  ## Contributions
  
  * Omid Setayeshfar
-   * Pre Processing
+    * Pre Processing
     * Post Processing
     * U_net
+    * Multi Input UNet Implementations ( Variance, Optical Flow, Optical Flow Magnitude )
+    * Optical Flow Implemetation 
+    * Agregated Optical Flow Idea & Implementation 
     * Software Engineering
+    * Partialy Wiki
     
  
 * Hiten Nirmal
