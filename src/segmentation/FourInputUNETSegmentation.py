@@ -113,8 +113,6 @@ class Four_Input_UNET_Segmenter(Segmenter):
         kernel_size = 3
         input_shape = (640, 640, 1)
 
-        print("***************" , type( of_train) )
-
         main_input= Input(input_shape, name='main_input')
         var_input = Input(input_shape, name='v_input')
         of_input = Input( ( 640, 640, 3 ), name='of_input' )
@@ -123,7 +121,7 @@ class Four_Input_UNET_Segmenter(Segmenter):
         input_prob_inverse = Input(input_shape)
         # Conv3D(filters,(3,3,3),sjfsjf)
         if self.trained_model is None:
-            merger = concatenate([main_input , var_input, of_input ,of_mag_input])
+            merger = concatenate([ main_input, var_input , of_input ,of_mag_input])
 
             conv1 = Conv2D(32, (kernel_size, kernel_size), activation='relu', padding='same',
                            kernel_regularizer=regularizers.l2(l2_lambda))(merger)
@@ -210,7 +208,7 @@ class Four_Input_UNET_Segmenter(Segmenter):
 
             conv10 = Conv2D(1, (1, 1), activation='sigmoid', name='conv10')(conv9)
 
-            model = Model(inputs=[main_input, var_input, of_input, of_mag_input], outputs=[conv10])
+            model = Model(inputs=[  main_input,  var_input,  of_input  , of_mag_input], outputs=[conv10])
             model.compile(optimizer=Adam(lr=1e-5), loss=Four_Input_UNET_Segmenter.dice_coef_loss,
                           metrics=[Four_Input_UNET_Segmenter.dice_coef])
 
@@ -222,7 +220,7 @@ class Four_Input_UNET_Segmenter(Segmenter):
         print(model.summary())
 
         # training network
-        model.fit([x_train, v_train, of_train, of_mag_train], [y_train], batch_size=batch_size, epochs=epochs, shuffle=True)
+        model.fit([ x_train, v_train, of_train , of_mag_train], [y_train], batch_size=batch_size, epochs=epochs, shuffle=True)
 
         # set as class's model to be used for prediction
         self.trained_model = model

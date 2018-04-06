@@ -47,7 +47,7 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
 
 
                 if os.path.exists(os.path.join(self.trainingPath, sample + '/OpticalFlowMagSum.png')):
-                    the_of_mag = cv2.imread(os.path.join(self.trainingPath, sample + '/OpticalFlowMagSum.png'), 1)
+                    the_of_mag = cv2.imread(os.path.join(self.trainingPath, sample + '/OpticalFlowMagSum.png'), 0)
                 else:
                     images = [self.change_size(cv2.imread(os.path.join(self.trainingPath, "%s/frame%04d.png" % (sample, i)), 0))
                      for i in range(0, 99)]
@@ -147,12 +147,12 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
                 the_var= None
 
                 if os.path.exists(os.path.join(self.testPath, sample + '/OpticalFlowMagSum.png')):
-                    the_of_mag = cv2.imread(os.path.join(self.testPath, sample + '/OpticalFlowMagSum.png'), 1)
+                    the_of_mag = cv2.imread(os.path.join(self.testPath, sample + '/OpticalFlowMagSum.png'), 0)
                 else:
                     images = [self.change_size(
                         cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0))
                               for i in range(0, 99)]
-                    prvs = cv2.cvtColor(images[0], cv2.COLOR_BGR2GRAY)
+                    prvs = images[0]
 
                     index = 0
                     totale = np.zeros((640, 640)).astype(float)
@@ -161,7 +161,7 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
                         index += 1
                         if index == 99: break
                         frame2 = images[index]
-                        next = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+                        next = frame2
                         flow = cv2.calcOpticalFlowFarneback(prvs, next, None, 0.5, 3, 15, 3, 5, 1.2, 0)
                         mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
                         totale += mag
@@ -215,7 +215,7 @@ class OpticalFlowMagnitudeSum ( preprocessor ):
                 test_vars[sample] = the_var
 
                 t = [cv2.imread(os.path.join(self.testPath, "%s/frame%04d.png" % (sample, i)), 0)
-                     for i in range(0, 99, 25)]
+                     for i in range(0, 99, 4)]
 
                 test_size_ref[sample] = t[0].shape
 
