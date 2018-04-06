@@ -28,7 +28,7 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
 
 ### Approach
 
-* #### UNET
+* #### [UNET](https://github.com/dsp-uga/goucher/wiki/Neural-Network-Models#unet)
     U-Net is convolutional network architecture for fast and precise segmentation of images.This deep neural network is implemented with    Keras functional API, which makes it extremely easy to experiment with different interesting architectures.
 
   In first attempt we just trained the network with normal images extracted form the frame.
@@ -42,16 +42,16 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
   #### Input for U-NET=Images+Variance+Optical-flow
   To know more about variance go-to wiki preprocessing page or click [here](https://github.com/dsp-uga/goucher/wiki/Pre-Processing)
   
-* #### Fast RCN
+* #### [Fast RCN](https://github.com/dsp-uga/goucher/wiki/Neural-Network-Models#fast-rcn)
 
   Fast R-CNN builds on previous     work to efficiently classify object proposals using deep convolutional networks. Compared to  previous work, Fast R-CNN employs several innovations to improve training and testing speed while also increasing detection accuracy. Fast R-CNN  trains the very deep      VGG16 network 9x faster than R-CNN.
 
   Unfortunately this model did not work well and we continued implementing with U-NET.
   More about the model is added in experiment-rcn branch
 
-* #### The One Hundred Layers Tiramisu:
+* #### [The One Hundred Layers Tiramisu:](https://github.com/dsp-uga/goucher/wiki/Neural-Network-Models#the-one-hundred-layers-tiramisu)
 
-    The typical segmentation architecture is composed of a downsampling path responsible for extracting coarse semantic features,    followed by an upsampling path trained to recover the input image resolution at the output of the model and, optionally, a post-processing module (e.g. Conditional Random Fields) to refine the model predictions. We extend DenseNets to deal with the problem of semantic segmentation.
+    The typical     segmentation architecture is composed of a downsampling path responsible for extracting coarse semantic features,    followed by an upsampling path trained to recover the input image resolution at the output of the model and, optionally, a post-processing module (e.g. Conditional Random Fields) to refine the model predictions. We extend DenseNets to deal with the problem of semantic segmentation.
 
     Althoug this network required GPU and it took too much time for processing when compare to U-NET. 
 
