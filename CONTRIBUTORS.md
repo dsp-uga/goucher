@@ -31,7 +31,7 @@
 * Vamsi Nadella
   * Pre Processing
   * Finding Variance
-  * Tiramisu traing and testing
+  * Tiramisu training and testing
   
 Everybody also actively participated in the conversation on Github (See [Issue](https://github.com/dsp-uga/goucher/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aall) tab).
    
