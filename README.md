@@ -51,9 +51,9 @@ Also see the [environment setup wiki page](https://github.com/dsp-uga/goucher/wi
 
 * #### The One Hundred Layers Tiramisu:
 
-The typical segmentation architecture is composed of a downsampling path responsible for extracting coarse semantic features, followed by an upsampling path trained to recover the input image resolution at the output of the model and, optionally, a post-processing module (e.g. Conditional Random Fields) to refine the model predictions. We extend DenseNets to deal with the problem of semantic segmentation.
+    The typical segmentation architecture is composed of a downsampling path responsible for extracting coarse semantic features,    followed by an upsampling path trained to recover the input image resolution at the output of the model and, optionally, a post-processing module (e.g. Conditional Random Fields) to refine the model predictions. We extend DenseNets to deal with the problem of semantic segmentation.
 
- Althoug this network required GPU and it took too much time for processing when compare to U-NET. 
+    Althoug this network required GPU and it took too much time for processing when compare to U-NET. 
 
 ### Downloader
 
