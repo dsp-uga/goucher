@@ -36,6 +36,7 @@ session = tf.Session(config=tf.ConfigProto(intra_op_parallelism_threads=23, inte
 tensorflow_backend.set_session(session)
 K.set_image_dim_ordering('tf')
 
+#Class weights to be applied 
 class_weighting = [
  0.1826,
  4.5640,
@@ -69,41 +70,45 @@ def change_size ( source ):
 
 
 def loadData(data_path):
+    '''This function loads the data from the given path. This method was the 
+    one from EveryOther class of preprocessing package but was redifined to make some changes.
+    
+    :param data_path: the path to load the data
+    :return: returns the samples and labels as numpy arrays.'''
     samples = []
     masks = []
    
     for path, subdirs, frames in os.walk(data_path):
-        j=1
         for subdir in subdirs:
-
+            #one in every five frames from the samples are loaded. The size of the frames are made to 640x640 
+            #by padding in change_size method.
             t = [  change_size(cv2.imread(os.path.join(path, "%s/frame%04d.png" % (subdir, i)),0))  for i in range(0, 99, 5) ]
             t = [ np.expand_dims(x, axis=0)  for x in t ]
             gc.collect()
 
 
-     
+            #The label for the sample are loaded and are resized 640x640 just like the frames.
             y = change_size(cv2.imread( path+'/'+subdir+'/mask.png', 0))
             y= np.expand_dims( y, axis=0 )
             y=( y==2 ).astype(int)
 
 
-            print "Importing sample",j
-
-            samples.extend(t)
-            for i in range( len(t)):
+            samples.extend(t) #extends all the frames of a sample to the samples variable
+            for i in range( len(t)):#mask y is copied for len(t) times to even the samples and frames for the network.
                 masks.append(y)
-            j = j+1
 
-    return array(samples), array(masks)
+    return array(samples), array(masks) #converts the list of samples and masks into nparray.
 
 
-data, label = loadData(sys.argv[1])
+data, label = loadData(sys.argv[1]) #imports the samples and masks from the given path.
 gc.collect()
 data_dims = data.shape
 label_dims = label.shape
-data = data.reshape(data_dims[0]*data_dims[1],data_dims[2],data_dims[3],1)
-label = label.reshape(label_dims[0]*label_dims[1],label_dims[2],label_dims[3],1)
 
+data = data.reshape(data_dims[0]*data_dims[1],data_dims[2],data_dims[3],1) #reshape to size(n_imgs, 640, 640, 1)
+label = label.reshape(label_dims[0]*label_dims[1],label_dims[2],label_dims[3],1)#reshape to size(n_imgs, 640, 640, 1)
+
+#Dividing the data to training and validation. 70 percent data for Training and 30 percent for validation.
 train_data = data[:int(data_dims[0]*0.70)]
 train_label = label[:int(label_dims[0]*0.70)]
 val_data = data[int(data_dims[0]*0.70):]
@@ -129,7 +134,7 @@ def dice_coef(y_true, y_pred):
 def dice_coef_loss(y_true, y_pred):
         return dice_coef(y_true, y_pred)
 
-
+#The number of layers for each dense block in the network.
 layer_per_block = [4, 5, 7, 10, 12, 15, 12, 10, 7, 5, 4]
 model = Tiramisu(layer_per_block)
 
