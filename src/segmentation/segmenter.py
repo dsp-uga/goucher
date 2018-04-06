@@ -50,7 +50,7 @@ class Segmenter :
 
         return self.trained_model
 
-    def predict(self, data_dic, data_var = None ):
+    def predict(self, data_dic, data_var = None , data_of = None, data_of_mag = None ):
         """
         this function runs the prediction on the data
         :param data_dic:
@@ -58,14 +58,20 @@ class Segmenter :
         """
         if( self.classifier_name=='DUALINPUTUNET' ):
             temp = self.trained_model.predict([data_dic, data_var])
-        else :
+        elif  self.classifier_name=='TRIPPLEINPUTUNET'  :
+            temp = self.trained_model.predict([data_dic, data_var, data_of])
+        elif self.classifier_name=='FOURINPUTUNET'  :
+            # temp = self.trained_model.predict([data_dic, data_var, data_of, data_of_mag])
+            temp = self.trained_model.predict([data_var,   data_of_mag])
+        else:
             temp = self.trained_model.predict(data_dic, batch_size=5)
+
         # print ( type( temp ) )
         # print( temp.shape )
         # print(np.max(temp) , np.mean( temp ), np.min( temp ) )
         temp = (temp>=0.5).astype(int)
         temp = np.sum(temp, axis=0)
-        temp = (temp > 0.5).astype(int)
+        temp = (temp > 3).astype(int)
         # print ( temp.shape  , np.max( temp ), np.min(temp) )
 
         return  np.uint(temp) #
